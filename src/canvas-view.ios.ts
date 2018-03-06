@@ -1,4 +1,4 @@
-import '../../../node_modules/tns-platform-declarations/ios';
+import 'tns-platform-declarations/ios';
 
 import { CanvasViewBase } from './canvas-view-common';
 import { NSWebGLContextAttributes } from './webgl/context-attributes';
