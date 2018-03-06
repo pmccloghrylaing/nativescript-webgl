@@ -1,4 +1,4 @@
-import '../../../node_modules/tns-platform-declarations/ios';
+import 'tns-platform-declarations/ios';
 
 import { fromFloatBuffer, fromIntBuffer, toFloatBuffer, toIntBuffer } from '../helpers.ios';
 import {

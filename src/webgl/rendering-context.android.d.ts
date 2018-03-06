@@ -1,4 +1,4 @@
-import '../../../node_modules/tns-platform-declarations/android';
+import 'tns-platform-declarations/android';
 import { GLEnumBlendingEquation, GLEnumBlendingFunction, GLEnumBlendingMode, GLEnumBufferBit, GLEnumBufferParam, GLEnumBufferType, GLEnumBufferUsage, GLEnumColorComponent, GLEnumEnable, GLEnumFaceDirection, GLEnumFramebuffer, GLEnumFramebufferAttachment, GLEnumFramebufferParam, GLEnumHintMode, GLEnumParam, GLEnumPixelFormat, GLEnumPixelStore, GLEnumPixelType, GLEnumPrimitive, GLEnumProgramParam, GLEnumRenderbuffer, GLEnumRenderbufferInternalFormat, GLEnumRenderbufferParam, GLEnumShaderParam, GLEnumShaderType, GLEnumTexCubeMap, GLEnumTexParam, GLEnumTexTarget, GLEnumTexture, GLEnumUniformType, GLEnumVertexAttrib } from './constants.common';
 import { NSWebGLRenderingContextBase } from './rendering-context-common';
 import { NSWebGLBuffer, NSWebGLFramebuffer, NSWebGLProgram, NSWebGLRenderbuffer, NSWebGLShader, NSWebGLTexture, NSWebGLUniformLocation } from './wrappers';

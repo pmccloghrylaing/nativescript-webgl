@@ -1,4 +1,4 @@
-import '../../../node_modules/tns-platform-declarations/android';
+import 'tns-platform-declarations/android';
 
 import {
     fromByteBuffer,

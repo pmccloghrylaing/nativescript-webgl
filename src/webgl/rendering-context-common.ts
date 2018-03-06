@@ -1,5 +1,3 @@
-import '../../../node_modules/tns-platform-declarations/android';
-
 import { NSWebGLRenderingContext as NSWebGLRenderingContextDeclaration } from './rendering-context';
 import { assertNever } from '../helpers.common';
 import {
@@ -35,7 +33,7 @@ import {
     GLEnumVertexAttrib,
     GLEnumShaderParam,
 } from './constants.common';
-import { NSWebGLContextAttributes } from './contextAttributes';
+import { NSWebGLContextAttributes } from './context-attributes';
 import {
     getIdOrZero,
     NSWebGLBuffer,

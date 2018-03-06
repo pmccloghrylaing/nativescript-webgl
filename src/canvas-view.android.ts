@@ -1,8 +1,8 @@
-import '../../../node_modules/tns-platform-declarations/android';
+import 'tns-platform-declarations/android';
 
 import { CanvasViewBase } from './canvas-view-common';
-import { NSWebGLContextAttributes } from './webgl/contextAttributes';
-import { NSWebGLRenderingContext } from './webgl/renderingcontext.android';
+import { NSWebGLContextAttributes } from './webgl/context-attributes';
+import { NSWebGLRenderingContext } from './webgl/rendering-context.android';
 
 export class CanvasView extends CanvasViewBase {
 

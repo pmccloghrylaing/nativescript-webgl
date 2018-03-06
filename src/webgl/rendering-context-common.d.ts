@@ -1,7 +1,6 @@
-import '../../../node_modules/tns-platform-declarations/android';
 import { NSWebGLRenderingContext as NSWebGLRenderingContextDeclaration } from './rendering-context';
 import { GLEnumBlendingMode, GLEnumBufferBit, GLEnumBufferParam, GLEnumBufferType, GLEnumBufferUsage, GLEnumColorComponent, GLEnumDataType, GLEnumEnable, GLEnumFaceDirection, GLEnumFramebuffer, GLEnumFramebufferAttachment, GLEnumFramebufferAttachmentObjectType, GLEnumFramebufferParam, GLEnumHintMode, GLEnumParam, GLEnumPixelFormat, GLEnumPixelStore, GLEnumPixelType, GLEnumProgramParam, GLEnumRenderbuffer, GLEnumRenderbufferInternalFormat, GLEnumRenderbufferParam, GLEnumShaderType, GLEnumTexCubeMap, GLEnumTexMagFilter, GLEnumTexParam, GLEnumTexTarget, GLEnumTexture, GLEnumUniformType, GLEnumVertexAttrib, GLEnumShaderParam } from './constants.common';
-import { NSWebGLContextAttributes } from './contextAttributes';
+import { NSWebGLContextAttributes } from './context-attributes';
 import { NSWebGLBuffer, NSWebGLFramebuffer, NSWebGLProgram, NSWebGLRenderbuffer, NSWebGLShader, NSWebGLTexture, NSWebGLUniformLocation } from './wrappers';
 import { CanvasView } from '../canvas-view';
 export declare abstract class NSWebGLRenderingContextBase implements NSWebGLRenderingContextDeclaration {
