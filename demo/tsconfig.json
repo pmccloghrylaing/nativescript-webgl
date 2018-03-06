@@ -31,5 +31,11 @@
         "node_modules",
         "platforms"
     ],
-    "compileOnSave": false
+    "compileOnSave": false,
+    "angularCompilerOptions": {
+        "annotateForClosureCompiler": true,
+        "strictMetadataEmit": true,
+        "skipTemplateCodegen": true,
+        "genDir": "."
+    }
 }

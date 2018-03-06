@@ -1,0 +1,1 @@
+[{"__symbolic":"module","version":4,"metadata":{"CanvasViewBase":{"__symbolic":"class","extends":{"__symbolic":"reference","module":"tns-core-modules/ui/core/view","name":"View","line":8,"character":45},"members":{"getContext":[{"__symbolic":"method"},{"__symbolic":"method"}],"createRenderingContext":[{"__symbolic":"method"}]}}}}]

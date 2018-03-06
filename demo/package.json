@@ -1,4 +1,6 @@
 {
+  "name": "nativescript-webgl-demo",
+  "main": "app.js",
   "nativescript": {
     "id": "org.nativescript.demo",
     "tns-android": {
@@ -11,7 +13,7 @@
   "dependencies": {
     "nativescript-theme-core": "^1.0.4",
     "nativescript-unit-test-runner": "^0.3.4",
-    "nativescript-opengles": "../src",
+    "nativescript-webgl": "../src",
     "tns-core-modules": "^3.4.0"
   },
   "devDependencies": {
@@ -44,6 +46,7 @@
   },
   "scripts": {
     "build.plugin": "cd ../src && npm run build",
-    "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'"
+    "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'",
+    "run.android": "tns run android"
   }
 }

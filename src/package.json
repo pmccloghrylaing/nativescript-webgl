@@ -1,9 +1,15 @@
 {
     "name": "nativescript-webgl",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "WebGL NativeScript plugin.",
-    "main": "webgl",
-    "typings": "index.d.ts",
+    "author": {
+        "name": "Phil McCloghry-Laing",
+        "url": "https://github.com/pmccloghrylaing"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/pmccloghrylaing/nativescript-webgl",
+    "main": "canvas-view",
+    "typings": "canvas-view.d.ts",
     "nativescript": {
         "platforms": {
             "android": "3.0.0",
@@ -11,20 +17,22 @@
         }
     },
     "scripts": {
-        "tsc": "tsc -skipLibCheck",
-        "build": "npm i && tsc",
-        "postclone": "npm i && node scripts/postclone.js && cd ../demo && npm i && cd ../src && npm run plugin.link",
-        "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
-        "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
+        "ngc": "ngc",
+        "tsc": "tsc",
+        "build": "yarn && tsc && npm run ngc",
+        "test.android": "yarn && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
+        "test.ios": "yarn && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
         "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude \"**/node_modules/**\"",
-        "plugin.link": "npm link && cd ../demo && npm link nativescript-opengles && cd ../src",
-        "plugin.tscwatch": "npm run tsc -- -w",
-        "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
-        "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
-        "demo.reset": "cd ../demo && rimraf platforms",
-        "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-opengles && tns plugin add ../src",
-        "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
-        "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'"
+        "plugin.link": "npm link && cd ../demo && npm link nativescript-webgl && cd ../src",
+        "plugin.tscwatch": "tsc -skipLibCheck -w",
+        "demo.ios": "yarn && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
+        "demo.android": "yarn && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+        "demo.ng.ios": "yarn && npm run tsc && cd ../demo-angular && tns run ios --syncAllFiles",
+        "demo.ng.android": "yarn && npm run tsc && cd ../demo-angular && tns run android --syncAllFiles",
+        "demo.reset": "cd ../demo && rimraf platforms && cd ../demo-angular && rimraf platforms",
+        "plugin.prepare": "npm run tsc && cd ../demo && tns plugin remove nativescript-webgl && tns plugin add ../src",
+        "clean": "cd ../demo && rimraf hooks node_modules platforms && cd ../demo-angular && rimraf hooks node_modules platforms && cd ../src && rimraf node_modules && npm run plugin.link",
+        "ci.tslint": "yarn && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'"
     },
     "keywords": [
         "NativeScript",
@@ -32,27 +40,28 @@
         "Android",
         "iOS"
     ],
-    "author": {
-        "name": "Your Name",
-        "email": "youremail@yourdomain.com"
-    },
     "bugs": {
-        "url": "https://github.com/pmccloghrylaing/nativescript-opengles/issues"
+        "url": "https://github.com/pmccloghrylaing/nativescript-webgl/issues"
     },
-    "license": "Apache-2.0",
-    "homepage": "https://github.com/pmccloghrylaing/nativescript-opengles",
     "readmeFilename": "README.md",
-    "devDependencies": {
-        "@types/gl-matrix": "^2.4.0",
-        "prompt": "^1.0.0",
-        "rimraf": "^2.5.0",
-        "tns-core-modules": "^3.1.0",
-        "tns-platform-declarations": "^3.1.0",
-        "tslint": "^5.0.0",
-        "typescript": "~2.3.0"
-    },
     "dependencies": {
         "gl-matrix": "^2.4.0"
+    },
+    "devDependencies": {
+        "@angular/common": "^5.2.7",
+        "@angular/compiler": "^5.2.7",
+        "@angular/compiler-cli": "^5.2.7",
+        "@angular/core": "^5.2.7",
+        "@types/gl-matrix": "^2.4.0",
+        "nativescript-angular": "^5.2.0",
+        "prompt": "^1.0.0",
+        "rimraf": "^2.5.0",
+        "rxjs": "^5.5.6",
+        "tns-core-modules": "^3.4.1",
+        "tns-platform-declarations": "^3.4.1",
+        "tslint": "^5.9.1",
+        "typescript": "^2.7.2",
+        "zone.js": "^0.8.20"
     },
     "bootstrapper": "nativescript-plugin-seed"
 }

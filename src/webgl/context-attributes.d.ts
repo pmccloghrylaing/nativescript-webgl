@@ -1,4 +1,4 @@
-export interface NSWebGLContextAttributes {
+export declare interface NSWebGLContextAttributes {
     failIfMajorPerformanceCaveat: boolean;
     alpha: boolean;
     antialias: boolean;

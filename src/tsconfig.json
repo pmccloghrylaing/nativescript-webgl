@@ -8,6 +8,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "lib": ["es6", "dom"],
+        "baseUrl": ".",
         "sourceMap": true,
         "pretty": true,
         "allowUnreachableCode": false,
@@ -21,7 +22,15 @@
         "strictNullChecks": true
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "platforms",
+        "hooks"
     ],
-    "compileOnSave": false
+    "compileOnSave": false,
+    "angularCompilerOptions": {
+        "annotateForClosureCompiler": true,
+        "strictMetadataEmit": true,
+        "skipTemplateCodegen": true,
+        "genDir": "."
+    }
 }

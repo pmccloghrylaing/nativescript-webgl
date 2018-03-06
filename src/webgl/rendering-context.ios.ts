@@ -1,15 +1,9 @@
-import '../../../node_modules/tns-platform-declarations/android';
+import '../../../node_modules/tns-platform-declarations/ios';
 
-import { CanvasView } from '../CanvasView.android';
+import { fromFloatBuffer, fromIntBuffer, toFloatBuffer, toIntBuffer } from '../helpers.ios';
 import {
-    fromByteBuffer,
-    fromFloatBuffer,
-    fromIntBuffer,
-    toByteBuffer,
-    toFloatBuffer,
-    toIntBuffer,
-} from '../helpers.android';
-import {
+    GLEnumBlendingEquation,
+    GLEnumBlendingFunction,
     GLEnumBlendingMode,
     GLEnumBufferBit,
     GLEnumBufferParam,
@@ -34,15 +28,13 @@ import {
     GLEnumShaderParam,
     GLEnumShaderType,
     GLEnumTexCubeMap,
-    GLEnumBlendingEquation,
     GLEnumTexParam,
     GLEnumTexTarget,
     GLEnumTexture,
     GLEnumUniformType,
     GLEnumVertexAttrib,
 } from './constants.common';
-import { NSWebGLContextAttributes } from './contextAttributes';
-import { NSWebGLRenderingContextCommon } from './renderingcontext.common';
+import { NSWebGLRenderingContextBase } from './rendering-context-common';
 import {
     getIdOrZero,
     NSWebGLBuffer,
@@ -54,9 +46,7 @@ import {
     NSWebGLUniformLocation,
 } from './wrappers';
 
-const GLES20 = android.opengl.GLES20;
-
-export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
+export class NSWebGLRenderingContext extends NSWebGLRenderingContextBase {
     get drawingBufferHeight(): number {
         throw new Error();
     }
@@ -64,57 +54,50 @@ export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
         throw new Error();
     }
 
-    constructor(
-        public canvas: CanvasView,
-        attributes?: Partial<NSWebGLContextAttributes>,
-    ) {
-        super(attributes);
-    }
-
     activeTexture(texture: GLEnumTexture): void {
-        GLES20.glActiveTexture(texture);
+        glActiveTexture(texture);
     }
     attachShader(program: NSWebGLProgram | null, shader: NSWebGLShader | null): void {
-        GLES20.glAttachShader(getIdOrZero(program), getIdOrZero(shader));
+        glAttachShader(getIdOrZero(program), getIdOrZero(shader));
     }
     bindAttribLocation(program: NSWebGLProgram | null, index: number, name: string): void {
-        GLES20.glBindAttribLocation(getIdOrZero(program), index, name);
+        glBindAttribLocation(getIdOrZero(program), index, name);
     }
     bindBuffer(
         target: GLEnumBufferType,
         buffer: NSWebGLBuffer | null,
     ): void {
-        GLES20.glBindBuffer(target, getIdOrZero(buffer));
+        glBindBuffer(target, getIdOrZero(buffer));
     }
     bindFramebuffer(
         target: GLEnumFramebuffer,
         framebuffer: NSWebGLFramebuffer | null,
     ): void {
-        GLES20.glBindFramebuffer(target, getIdOrZero(framebuffer));
+        glBindFramebuffer(target, getIdOrZero(framebuffer));
     }
     bindRenderbuffer(
         target: GLEnumRenderbuffer,
         renderbuffer: NSWebGLRenderbuffer | null,
     ): void {
-        GLES20.glBindRenderbuffer(target, getIdOrZero(renderbuffer));
+        glBindRenderbuffer(target, getIdOrZero(renderbuffer));
     }
     bindTexture(target: GLEnumTexture, texture: NSWebGLTexture | null): void {
-        GLES20.glBindTexture(target, getIdOrZero(texture));
+        glBindTexture(target, getIdOrZero(texture));
     }
     blendColor(red: number, green: number, blue: number, alpha: number): void {
-        GLES20.glBlendColor(red, green, blue, alpha);
+        glBlendColor(red, green, blue, alpha);
     }
     blendEquation(mode: GLEnumBlendingEquation): void {
-        GLES20.glBlendEquation(mode);
+        glBlendEquation(mode);
     }
     blendEquationSeparate(modeRGB: GLEnumBlendingEquation, modeAlpha: GLEnumBlendingEquation): void {
-        GLES20.glBlendEquationSeparate(modeRGB, modeAlpha);
+        glBlendEquationSeparate(modeRGB, modeAlpha);
     }
     blendFunc(sfactor: GLEnumBlendingMode | GLEnumBlendingFunction, dfactor: GLEnumBlendingMode | GLEnumBlendingFunction): void {
-        GLES20.glBlendFunc(sfactor, dfactor);
+        glBlendFunc(sfactor, dfactor);
     }
     blendFuncSeparate(srcRGB: GLEnumBlendingMode | GLEnumBlendingFunction, dstRGB: GLEnumBlendingMode | GLEnumBlendingFunction, srcAlpha: GLEnumBlendingMode | GLEnumBlendingFunction, dstAlpha: GLEnumBlendingMode | GLEnumBlendingFunction): void {
-        GLES20.glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+        glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
     }
     bufferData(
         target: GLEnumBufferType,
@@ -148,195 +131,200 @@ export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
         // srcOffset?: number, length?: number,
     ): void {
         if (!srcDataOrSize) {
-            return GLES20.glBufferData(
+            return glBufferData(
                 target, 0,
-                java.nio.BaseByteBuffer.allocate(0), usage);
+                interop.alloc(0), usage);
         }
 
         if (typeof srcDataOrSize === 'number') {
-            return GLES20.glBufferData(
+            return glBufferData(
                 target, srcDataOrSize,
-                java.nio.BaseByteBuffer.allocate(srcDataOrSize), usage);
+                interop.alloc(srcDataOrSize),
+                usage);
         }
 
-        return GLES20.glBufferData(
+        return glBufferData(
             target, srcDataOrSize.byteLength,
-            toByteBuffer(srcDataOrSize), usage);
+            interop.handleof(srcDataOrSize), usage);
     }
     bufferSubData(
         target: GLEnumBufferType,
         offset: number,
         data: ArrayBufferView | ArrayBuffer,
     ): void {
-        return GLES20.glBufferSubData(
+        return glBufferSubData(
             target, offset, data.byteLength,
-            toByteBuffer(data));
+            interop.handleof(data));
     }
     checkFramebufferStatus(target: GLEnumFramebuffer): number {
-        return GLES20.glCheckFramebufferStatus(target);
+        return glCheckFramebufferStatus(target);
     }
     clear(mask: GLEnumBufferBit): void {
-        GLES20.glClear(mask);
+        glClear(mask);
     }
     clearColor(red: number, green: number, blue: number, alpha: number): void {
-        GLES20.glClearColor(red, green, blue, alpha);
+        glClearColor(red, green, blue, alpha);
     }
     clearDepth(depth: number): void {
-        GLES20.glClearDepthf(depth);
+        glClearDepthf(depth);
     }
     clearStencil(s: number): void {
-        GLES20.glClearStencil(s);
+        glClearStencil(s);
     }
     colorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void {
-        GLES20.glColorMask(red, green, blue, alpha);
+        glColorMask(red ? 1 : 0, green ? 1 : 0, blue ? 1 : 0, alpha ? 1 : 0);
     }
     compileShader(shader: NSWebGLShader | null): void {
-        GLES20.glCompileShader(getIdOrZero(shader));
+        glCompileShader(getIdOrZero(shader));
     }
     compressedTexImage2D(
         target: GLEnumTexTarget | GLEnumTexCubeMap, level: number, internalformat: number, width: number, height: number,
         border: number, data: ArrayBufferView,
     ): void {
-        GLES20.glCompressedTexImage2D(
+        glCompressedTexImage2D(
             target, level, internalformat, width, height,
-            border, data.byteLength, toByteBuffer(data),
+            border, data.byteLength, interop.handleof(data),
         );
     }
     compressedTexSubImage2D(
         target: GLEnumTexTarget | GLEnumTexCubeMap, level: number, xoffset: number, yoffset: number,
         width: number, height: number, format: number, data: ArrayBufferView,
     ): void {
-        GLES20.glCompressedTexSubImage2D(
+        glCompressedTexSubImage2D(
             target, level, xoffset, yoffset, width, height,
-            format, data.byteLength, toByteBuffer(data),
+            format, data.byteLength, interop.handleof(data),
         );
     }
     copyTexImage2D(
         target: GLEnumTexTarget | GLEnumTexCubeMap, level: number, internalformat: GLEnumColorComponent,
         x: number, y: number, width: number, height: number, border: number,
     ): void {
-        GLES20.glCopyTexImage2D(
+        glCopyTexImage2D(
             target, level, internalformat, x, y, width, height, border);
     }
     copyTexSubImage2D(
         target: GLEnumTexTarget | GLEnumTexCubeMap, level: number, xoffset: number, yoffset: number,
         x: number, y: number, width: number, height: number,
     ): void {
-        GLES20.glCopyTexSubImage2D(
+        glCopyTexSubImage2D(
             target, level, xoffset, yoffset, x, y, width, height);
     }
     createBuffer(): NSWebGLBuffer | null {
-        const holder = java.nio.IntBuffer.allocate(1);
-        GLES20.glGenBuffers(1, holder);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGenBuffers(1, pointer);
 
-        return new NSWebGLBuffer(holder.get(0));
+        return new NSWebGLBuffer(new interop.Reference(interop.types.int32, pointer).value);
     }
     createFramebuffer(): NSWebGLFramebuffer | null {
-        const holder = java.nio.IntBuffer.allocate(1);
-        GLES20.glGenFramebuffers(1, holder);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGenFramebuffers(1, pointer);
 
-        return new NSWebGLFramebuffer(holder.get(0));
+        return new NSWebGLFramebuffer(
+            new interop.Reference(interop.types.int32, pointer).value,
+        );
     }
     createProgram(): NSWebGLProgram | null {
-        return new NSWebGLProgram(GLES20.glCreateProgram());
+        return new NSWebGLProgram(glCreateProgram());
     }
     createRenderbuffer(): NSWebGLRenderbuffer | null {
-        const holder = java.nio.IntBuffer.allocate(1);
-        GLES20.glGenRenderbuffers(1, holder);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGenRenderbuffers(1, pointer);
 
-        return new NSWebGLRenderbuffer(holder.get(0));
+        return new NSWebGLRenderbuffer(
+            new interop.Reference(interop.types.int32, pointer).value,
+        );
     }
     createShader(type: GLEnumShaderType): NSWebGLShader | null {
-        return new NSWebGLShader(GLES20.glCreateShader(type));
+        return new NSWebGLShader(glCreateShader(type));
     }
     createTexture(): NSWebGLTexture | null {
-        const holder = java.nio.IntBuffer.allocate(1);
-        GLES20.glGenTextures(1, holder);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGenTextures(1, pointer);
 
-        return new NSWebGLTexture(holder.get(0));
+        return new NSWebGLTexture(
+            new interop.Reference(interop.types.int32, pointer).value,
+        );
     }
     cullFace(mode: number): void {
-        GLES20.glCullFace(mode);
+        glCullFace(mode);
     }
     deleteBuffer(buffer: NSWebGLBuffer | null): void {
         if (!buffer) return;
 
-        const holder = java.nio.IntBuffer.allocate(1);
-        holder.put(0, getIdOrZero(buffer));
+        const ref = new interop.Reference(interop.types.int32, getIdOrZero(buffer));
 
-        GLES20.glDeleteBuffers(0, holder);
+        glDeleteBuffers(0, ref);
     }
     deleteFramebuffer(framebuffer: NSWebGLFramebuffer | null): void {
         if (!framebuffer) return;
 
-        const holder = java.nio.IntBuffer.allocate(1);
-        holder.put(0, getIdOrZero(framebuffer));
+        const ref = new interop.Reference(interop.types.int32, getIdOrZero(framebuffer));
 
-        GLES20.glDeleteFramebuffers(0, holder);
+        glDeleteFramebuffers(0, ref);
     }
     deleteProgram(program: NSWebGLProgram | null): void {
-        GLES20.glDeleteProgram(getIdOrZero(program));
+        glDeleteProgram(getIdOrZero(program));
     }
     deleteRenderbuffer(renderbuffer: NSWebGLRenderbuffer | null): void {
         if (!renderbuffer) return;
 
-        const holder = java.nio.IntBuffer.allocate(1);
-        holder.put(0, getIdOrZero(renderbuffer));
+        const ref = new interop.Reference(interop.types.int32, getIdOrZero(renderbuffer));
 
-        GLES20.glDeleteRenderbuffers(0, holder);
+        glDeleteRenderbuffers(0, ref);
     }
     deleteShader(shader: NSWebGLShader | null): void {
-        GLES20.glDeleteShader(getIdOrZero(shader));
+        glDeleteShader(getIdOrZero(shader));
     }
     deleteTexture(texture: NSWebGLTexture | null): void {
         if (!texture) return;
 
-        const textureIds = java.nio.IntBuffer.allocate(1);
-        textureIds.put(0, getIdOrZero(texture));
+        const ref = new interop.Reference(interop.types.int32, getIdOrZero(texture));
 
-        GLES20.glDeleteTextures(1, textureIds);
+        glDeleteTextures(1, ref);
     }
     depthFunc(func: number): void {
-        GLES20.glDepthFunc(func);
+        glDepthFunc(func);
     }
     depthMask(flag: boolean): void {
-        GLES20.glDepthMask(flag);
+        glDepthMask(flag ? 1 : 0);
     }
     depthRange(zNear: number, zFar: number): void {
-        GLES20.glDepthRangef(zNear, zFar);
+        glDepthRangef(zNear, zFar);
     }
     detachShader(program: NSWebGLProgram | null, shader: NSWebGLShader | null): void {
-        GLES20.glDetachShader(getIdOrZero(program), getIdOrZero(shader));
+        glDetachShader(getIdOrZero(program), getIdOrZero(shader));
     }
     disable(cap: GLEnumEnable): void {
-        GLES20.glDisable(cap);
+        glDisable(cap);
     }
     disableVertexAttribArray(index: number): void {
-        GLES20.glDisableVertexAttribArray(index);
+        glDisableVertexAttribArray(index);
     }
     drawArrays(mode: GLEnumPrimitive, first: number, count: number): void {
-        GLES20.glDrawArrays(mode, first, count);
+        glDrawArrays(mode, first, count);
     }
     drawElements(mode: GLEnumPrimitive, count: number, type: number, offset: number): void {
-        GLES20.glDrawElements(mode, count, type, offset);
+        const ref = new interop.Reference(interop.types.int32, offset);
+
+        glDrawElements(mode, count, type, ref);
     }
     enable(cap: GLEnumEnable): void {
-        GLES20.glEnable(cap);
+        glEnable(cap ? 1 : 0);
     }
     enableVertexAttribArray(index: number): void {
-        GLES20.glEnableVertexAttribArray(index);
+        glEnableVertexAttribArray(index);
     }
     finish(): void {
-        GLES20.glFinish();
+        glFinish();
     }
     flush(): void {
-        GLES20.glFlush();
+        glFlush();
     }
     framebufferRenderbuffer(
         target: GLEnumFramebuffer, attachment: GLEnumFramebufferAttachment, renderbuffertarget: GLEnumRenderbuffer,
         renderbuffer: NSWebGLRenderbuffer | null,
     ): void {
-        GLES20.glFramebufferRenderbuffer(
+        glFramebufferRenderbuffer(
             target, attachment, renderbuffertarget, getIdOrZero(renderbuffer),
         );
     }
@@ -344,29 +332,37 @@ export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
         target: GLEnumFramebuffer, attachment: GLEnumFramebufferAttachment, textarget: GLEnumTexTarget | GLEnumTexCubeMap, texture: NSWebGLTexture | null,
         level: number,
     ): void {
-        GLES20.glFramebufferTexture2D(
+        glFramebufferTexture2D(
             target, attachment, textarget, getIdOrZero(texture), level,
         );
     }
     frontFace(mode: GLEnumFaceDirection): void {
-        GLES20.glFrontFace(mode);
+        glFrontFace(mode);
     }
     generateMipmap(target: GLEnumTexTarget): void {
-        GLES20.glGenerateMipmap(target);
+        glGenerateMipmap(target);
     }
     getActiveAttrib(program: NSWebGLProgram | null, index: number): WebGLActiveInfo | null {
         if (!program) return null;
 
-        const sizeBuffer = java.nio.IntBuffer.allocate(1);
-        const typeBuffer = java.nio.IntBuffer.allocate(1);
+        const lengthPointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const sizePointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const typePointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const bufSize = 20;
+        const namePointer = interop.alloc(interop.sizeof(interop.types.unichar) * bufSize);
 
-        const name = GLES20.glGetActiveAttrib(getIdOrZero(program), index,
-            sizeBuffer, typeBuffer);
+        glGetActiveAttrib(
+            getIdOrZero(program), index, bufSize,
+            lengthPointer, sizePointer, typePointer,
+            new interop.Reference(interop.types.unichar, namePointer).value,
+        );
+
+        const length = new interop.Reference(interop.types.int32, lengthPointer).value;
 
         return {
-            name,
-            size: sizeBuffer.get(0),
-            type: typeBuffer.get(0),
+            name: new interop.Reference(interop.types.unichar, namePointer).value,
+            size: new interop.Reference(interop.types.int32, sizePointer).value,
+            type: new interop.Reference(interop.types.int32, typePointer).value,
         };
     }
     getActiveUniform(
@@ -374,29 +370,43 @@ export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
     ): { name: string; size: number; type: GLEnumUniformType; } | null {
         if (!program) return null;
 
-        const sizeBuffer = java.nio.IntBuffer.allocate(1);
-        const typeBuffer = java.nio.IntBuffer.allocate(1);
+        const lengthPointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const sizePointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const typePointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const bufSize = 50;
+        const namePointer = interop.alloc(interop.sizeof(interop.types.unichar) * bufSize);
 
-        const name = GLES20.glGetActiveUniform(getIdOrZero(program), index,
-            sizeBuffer, typeBuffer);
+        glGetActiveUniform(getIdOrZero(program), index, bufSize,
+            lengthPointer, sizePointer, typePointer,
+            new interop.Reference(interop.types.unichar, namePointer).value,
+        );
+
+        const length = new interop.Reference(interop.types.int32, lengthPointer).value;
 
         return {
-            name,
-            size: sizeBuffer.get(0),
-            type: typeBuffer.get(0),
+            name: NSString.stringWithUTF8String(namePointer as any).toString(),
+            size: new interop.Reference(interop.types.int32, sizePointer).value,
+            type: new interop.Reference(interop.types.int32, typePointer).value,
         };
     }
     getAttachedShaders(program: NSWebGLProgram | null): NSWebGLShader[] | null {
         if (!program) return null;
 
-        const countBuffer = java.nio.IntBuffer.allocate(1);
-        const shadersBuffer = java.nio.IntBuffer.allocate(100);
-        GLES20.glGetAttachedShaders(getIdOrZero(program),
-            100, countBuffer, shadersBuffer);
+        const countPointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const shadersPointer = interop.alloc(100 * interop.sizeof(interop.types.int32));
+
+        glGetAttachedShaders(getIdOrZero(program),
+            100, countPointer, shadersPointer);
+
+        const count = new interop.Reference(interop.types.int32, countPointer).value;
 
         const result: NSWebGLShader[] = [];
-        for (let i = 0; i < countBuffer.get(0); i++) {
-            result[i] = new NSWebGLShader(shadersBuffer.get(i));
+        for (let i = 0; i < count; i++) {
+            result[i] = new NSWebGLShader(
+                new interop.Reference(
+                    interop.types.int32,
+                    shadersPointer.add(i * interop.sizeof(interop.types.int32)),
+                ).value);
         }
 
         return result;
@@ -404,16 +414,17 @@ export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
     getAttribLocation(program: NSWebGLProgram | null, name: string): number {
         if (!program) return -1;
 
-        return GLES20.glGetAttribLocation(getIdOrZero(program), name);
+        return glGetAttribLocation(getIdOrZero(program), name);
     }
     protected getBufferParameteriv(target: GLEnumBufferType, pname: GLEnumBufferParam): number {
-        const buffer = java.nio.IntBuffer.allocate(1);
-        GLES20.glGetBufferParameteriv(target, pname, buffer);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
 
-        return buffer.get(0);
+        glGetBufferParameteriv(target, pname, pointer);
+
+        return new interop.Reference(interop.types.int32, pointer).value;
     }
     getError(): number {
-        return GLES20.glGetError();
+        return glGetError();
     }
     // getExtension(extensionName: "EXT_blend_minmax"): EXT_blend_minmax | null;
     // getExtension(
@@ -448,107 +459,146 @@ export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
     // getExtension(extensionName: "OES_element_index_uint"): OES_element_index_uint | null;
     // getExtension(extensionName: "ANGLE_instanced_arrays"): ANGLE_instanced_arrays | null;
     // getExtension(extensionName: string): any {
-    //     GLES20.glgetExtension();
+    //     glgetExtension();
     // }
     protected getFramebufferAttachmentParameteriv(
         target: GLEnumFramebuffer, attachment: GLEnumFramebufferAttachment,
         pname: GLEnumFramebufferParam,
     ): number {
-        const buffer = java.nio.IntBuffer.allocate(1);
-        GLES20.glGetFramebufferAttachmentParameteriv(
-            target, attachment, pname, buffer,
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+
+        glGetFramebufferAttachmentParameteriv(
+            target, attachment, pname, pointer,
         );
 
-        return buffer.get(0);
+        return new interop.Reference(interop.types.int32, pointer).value;
     }
     protected getParameteriv(pname: GLEnumParam | GLEnumEnable): number;
     protected getParameteriv(pname: GLEnumParam | GLEnumEnable, size: number): number[];
     protected getParameteriv(pname: GLEnumParam | GLEnumEnable, size?: number): number | number[] {
-        const buffer = java.nio.IntBuffer.allocate(size != null ? size : 1);
-        GLES20.glGetIntegerv(pname, buffer);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32)
+            * (size != null ? size : 1));
+        glGetIntegerv(pname, pointer);
 
-        return size != null ? fromIntBuffer(buffer) : buffer.get(0);
+        return fromIntBuffer(pointer, size);
     }
     protected getParameterfv(pname: GLEnumParam | GLEnumEnable): number;
     protected getParameterfv(pname: GLEnumParam | GLEnumEnable, size: number): number[];
     protected getParameterfv(pname: GLEnumParam | GLEnumEnable, size?: number): number | number[] {
-        const buffer = java.nio.FloatBuffer.allocate(size != null ? size : 1);
-        GLES20.glGetFloatv(pname, buffer);
+        const pointer = interop.alloc(interop.sizeof(interop.types.float)
+            * (size != null ? size : 1));
 
-        return size != null ? fromFloatBuffer(buffer) : buffer.get(0);
+        glGetFloatv(pname, pointer);
+
+        return fromFloatBuffer(pointer, size);
     }
     getProgramInfoLog(program: NSWebGLProgram | null): string | null {
-        return GLES20.glGetProgramInfoLog(getIdOrZero(program));
-    }
-    protected getProgramParameteriv(program: NSWebGLProgram | null, pname: GLEnumProgramParam): number {
-        const buffer = java.nio.IntBuffer.allocate(1);
-        GLES20.glGetProgramiv(
-            getIdOrZero(program), pname, buffer,
+        const lengthPointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const bufSize = 200;
+        const infoPointer = interop.alloc(interop.sizeof(interop.types.unichar) * bufSize);
+
+        glGetProgramInfoLog(getIdOrZero(program), bufSize, lengthPointer,
+            new interop.Reference(interop.types.unichar, infoPointer).value,
         );
 
-        return buffer.get(0);
+        const length = new interop.Reference(interop.types.int32, lengthPointer).value;
+
+        return NSString.stringWithUTF8String(infoPointer as any).toString();
+    }
+    protected getProgramParameteriv(
+        program: NSWebGLProgram | null, pname: GLEnumProgramParam,
+    ): number {
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGetProgramiv(
+            getIdOrZero(program), pname, pointer,
+        );
+
+        return new interop.Reference(interop.types.int32, pointer).value;
     }
     protected getRenderbufferParameteriv(
         target: GLEnumRenderbuffer.RENDERBUFFER, pname: GLEnumRenderbufferParam,
     ): number {
-        const buffer = java.nio.IntBuffer.allocate(1);
-        GLES20.glGetRenderbufferParameteriv(target, pname, buffer);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGetRenderbufferParameteriv(target, pname, pointer);
 
-        return buffer.get(0);
+        return new interop.Reference(interop.types.int32, pointer).value;
     }
     getShaderInfoLog(shader: NSWebGLShader | null): string | null {
-        return GLES20.glGetShaderInfoLog(getIdOrZero(shader));
+        const lengthPointer = interop.alloc(interop.sizeof(interop.types.int32));
+        const bufSize = 200;
+        const infoPointer = interop.alloc(interop.sizeof(interop.types.unichar) * bufSize);
+
+        glGetShaderInfoLog(getIdOrZero(shader), bufSize, lengthPointer,
+            new interop.Reference(interop.types.unichar, infoPointer).value,
+        );
+
+        const length = new interop.Reference(interop.types.int32, lengthPointer).value;
+
+        return NSString.stringWithUTF8String(infoPointer as any).toString();
     }
     protected getShaderParameteriv(shader: NSWebGLShader | null, pname: GLEnumShaderParam): any {
-        const buffer = java.nio.IntBuffer.allocate(1);
-        GLES20.glGetShaderiv(getIdOrZero(shader), pname, buffer);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGetShaderiv(getIdOrZero(shader), pname, pointer);
 
-        return buffer.get(0);
+        return new interop.Reference(interop.types.int32, pointer).value;
     }
     getShaderPrecisionFormat(
         shadertype: number, precisiontype: number,
     ): WebGLShaderPrecisionFormat | null {
-        const rangeBuffer = java.nio.IntBuffer.allocate(2);
-        const precisionBuffer = java.nio.IntBuffer.allocate(1);
-        GLES20.glGetShaderPrecisionFormat(shadertype, precisiontype,
-            rangeBuffer, precisionBuffer);
+        const rangeRef = new interop.Reference(
+            interop.types.int32, interop.alloc(2 * interop.sizeof(interop.types.int32)));
+        const precisionRef = new interop.Reference(
+            interop.types.int32, interop.alloc(interop.sizeof(interop.types.int32)));
+
+        glGetShaderPrecisionFormat(shadertype, precisiontype,
+            rangeRef, precisionRef);
+
         return {
-            rangeMin: rangeBuffer.get(0),
-            rangeMax: rangeBuffer.get(1),
-            precision: precisionBuffer.get(0),
+            rangeMin: rangeRef[0],
+            rangeMax: rangeRef[interop.sizeof(interop.types.int32)],
+            precision: precisionRef.value,
         };
     }
     getShaderSource(shader: NSWebGLShader | null): string | null {
-        return GLES20.glGetShaderSource(getIdOrZero(shader));
+        const lengthRef = new interop.Reference(interop.types.int32,
+            interop.alloc(interop.sizeof(interop.types.int32)));
+        const bufSize = 200;
+        const sourcePointer = interop.alloc(interop.sizeof(interop.types.unichar) * bufSize);
+
+        glGetShaderSource(getIdOrZero(shader), bufSize, lengthRef,
+            new interop.Reference(interop.types.unichar, sourcePointer).value,
+        );
+
+        return NSString.stringWithUTF8String(sourcePointer as any).toString();
     }
     // getSupportedExtensions(): string[] | null {
-    //     GLES20.glgetSupportedExtensions();
+    //     glgetSupportedExtensions();
     // }
     protected getTexParameteriv(target: GLEnumTexTarget, pname: GLEnumTexParam): number {
-        const buffer = java.nio.IntBuffer.allocate(1);
-        GLES20.glGetTexParameteriv(target, pname, buffer);
+        const pointer = interop.alloc(interop.sizeof(interop.types.int32));
+        glGetTexParameteriv(target, pname, pointer);
 
-        return buffer.get(0);
+        return new interop.Reference(interop.types.int32, pointer).value;
     }
     protected getUniformiv(program: NSWebGLProgram | null, location: NSWebGLUniformLocation | null, size: number): number[] {
-        const buffer = java.nio.IntBuffer.allocate(size);
-        GLES20.glGetUniformiv(getIdOrZero(program), getIdOrZero(location), buffer);
+        const pointer = interop.alloc(size * interop.sizeof(interop.types.int32));
+        glGetUniformiv(getIdOrZero(program), getIdOrZero(location), pointer);
 
-        return fromFloatBuffer(buffer);
+        return fromIntBuffer(pointer, size);
     }
     protected getUniformfv(program: NSWebGLProgram | null, location: NSWebGLUniformLocation | null, size: number): number[] {
-        const buffer = java.nio.FloatBuffer.allocate(size);
-        GLES20.glGetUniformfv(getIdOrZero(program), getIdOrZero(location), buffer);
+        const pointer = interop.alloc(size * interop.sizeof(interop.types.float));
+        glGetUniformfv(getIdOrZero(program), getIdOrZero(location), pointer);
 
-        return fromFloatBuffer(buffer);
+        return fromFloatBuffer(pointer, size);
     }
     getUniformLocation(program: NSWebGLProgram | null, name: string): NSWebGLUniformLocation | null {
         if (!program) return null;
 
-        const uniformLocation = GLES20.glGetUniformLocation(getIdOrZero(program), name);
+        const uniformLocation = glGetUniformLocation(getIdOrZero(program), name);
 
-        const sizeBuffer = java.nio.IntBuffer.allocate(1);
-        const typeBuffer = java.nio.IntBuffer.allocate(1);
+        const sizeBuffer = interop.alloc(1);
+        const typeBuffer = interop.alloc(1);
         const length = this.getProgramParameteriv(program, GLEnumProgramParam.ACTIVE_UNIFORMS)!;
         for (let i = 0; i < length; i++) {
             let info = this.getActiveUniform(program, i)!;
@@ -566,233 +616,235 @@ export class NSWebGLRenderingContext extends NSWebGLRenderingContextCommon {
     getVertexAttribiv(index: number, pname: GLEnumVertexAttrib): number;
     getVertexAttribiv(index: number, pname: GLEnumVertexAttrib, size: number): number[];
     getVertexAttribiv(index: number, pname: GLEnumVertexAttrib, size?: number): number | number[] {
-        const buffer = java.nio.IntBuffer.allocate(size != null ? size : 1);
-        GLES20.glGetVertexAttribiv(index, pname, buffer);
+        const pointer = interop.alloc((size != null ? size : 1)
+            * interop.sizeof(interop.types.int32));
+        glGetVertexAttribiv(index, pname, pointer);
 
-        return size != null ? fromIntBuffer(buffer) : buffer.get(0);
+        return fromIntBuffer(pointer, size);
     }
     hint(target: number, mode: GLEnumHintMode): void {
-        GLES20.glHint(target, mode);
+        glHint(target, mode);
     }
     isBuffer(buffer: NSWebGLBuffer | null): boolean {
-        return GLES20.glIsBuffer(getIdOrZero(buffer));
+        return !!glIsBuffer(getIdOrZero(buffer));
     }
     isEnabled(cap: number): boolean {
-        return GLES20.glIsEnabled(cap);
+        return !!glIsEnabled(cap);
     }
     isFramebuffer(framebuffer: NSWebGLFramebuffer | null): boolean {
-        return GLES20.glIsFramebuffer(getIdOrZero(framebuffer));
+        return !!glIsFramebuffer(getIdOrZero(framebuffer));
     }
     isProgram(program: NSWebGLProgram | null): boolean {
-        return GLES20.glIsProgram(getIdOrZero(program));
+        return !!glIsProgram(getIdOrZero(program));
     }
     isRenderbuffer(renderbuffer: NSWebGLRenderbuffer | null): boolean {
-        return GLES20.glIsRenderbuffer(getIdOrZero(renderbuffer));
+        return !!glIsRenderbuffer(getIdOrZero(renderbuffer));
     }
     isShader(shader: NSWebGLShader | null): boolean {
-        return GLES20.glIsShader(getIdOrZero(shader));
+        return !!glIsShader(getIdOrZero(shader));
     }
     isTexture(texture: NSWebGLTexture | null): boolean {
-        return GLES20.glIsTexture(getIdOrZero(texture));
+        return !!glIsTexture(getIdOrZero(texture));
     }
     lineWidth(width: number): void {
-        GLES20.glLineWidth(width);
+        glLineWidth(width);
     }
     linkProgram(program: NSWebGLProgram | null): void {
-        GLES20.glLinkProgram(getIdOrZero(program));
+        glLinkProgram(getIdOrZero(program));
     }
     pixelStorei(pname: GLEnumPixelStore, param: number): void {
-        GLES20.glPixelStorei(pname, param);
+        glPixelStorei(pname, param);
     }
     polygonOffset(factor: number, units: number): void {
-        GLES20.glPolygonOffset(factor, units);
+        glPolygonOffset(factor, units);
     }
     readPixelsCore(
         x: number, y: number, width: number, height: number, format: GLEnumPixelFormat,
         type: GLEnumPixelType, pixels: ArrayBufferView, bufferSize: number,
     ): void {
-        const buffer = java.nio.ByteBuffer.allocate(bufferSize);
+        const pointer = interop.handleof(pixels);
 
-        GLES20.glReadPixels(
-            x, y, width, height, format, type, buffer,
+        glReadPixels(
+            x, y, width, height, format, type, pointer,
         );
-
-        fromByteBuffer(buffer, pixels);
     }
     renderbufferStorage(
         target: GLEnumRenderbuffer, internalformat: GLEnumRenderbufferInternalFormat,
         width: number, height: number,
     ): void {
-        GLES20.glRenderbufferStorage(
+        glRenderbufferStorage(
             target, internalformat, width, height,
         );
     }
     sampleCoverage(value: number, invert: boolean): void {
-        GLES20.glSampleCoverage(value, invert);
+        glSampleCoverage(value, invert ? 1 : 0);
     }
     scissor(x: number, y: number, width: number, height: number): void {
-        GLES20.glScissor(x, y, width, height);
+        glScissor(x, y, width, height);
     }
     shaderSource(shader: NSWebGLShader | null, source: string): void {
-        GLES20.glShaderSource(getIdOrZero(shader), source);
+        glShaderSource(getIdOrZero(shader), 1,
+            new interop.Reference(interop.types.unichar, source),
+            new interop.Reference(interop.types.uint32, source.length),
+        );
     }
     stencilFunc(func: number, ref: number, mask: number): void {
-        GLES20.glStencilFunc(func, ref, mask);
+        glStencilFunc(func, ref, mask);
     }
     stencilFuncSeparate(face: number, func: number, ref: number, mask: number): void {
-        GLES20.glStencilFuncSeparate(face, func, ref, mask);
+        glStencilFuncSeparate(face, func, ref, mask);
     }
     stencilMask(mask: number): void {
-        GLES20.glStencilMask(mask);
+        glStencilMask(mask);
     }
     stencilMaskSeparate(face: number, mask: number): void {
-        GLES20.glStencilMaskSeparate(face, mask);
+        glStencilMaskSeparate(face, mask);
     }
     stencilOp(fail: number, zfail: number, zpass: number): void {
-        GLES20.glStencilOp(fail, zfail, zpass);
+        glStencilOp(fail, zfail, zpass);
     }
     stencilOpSeparate(face: number, fail: number, zfail: number, zpass: number): void {
-        GLES20.glStencilOpSeparate(face, fail, zfail, zpass);
+        glStencilOpSeparate(face, fail, zfail, zpass);
     }
     texImage2D(
         target: GLEnumTexTarget | GLEnumTexCubeMap, level: number, internalformat: GLEnumColorComponent,
         width: number, height: number, border: number, format: GLEnumColorComponent, type: GLEnumPixelType,
         pixels: ArrayBufferView,
     ): void {
-        GLES20.glTexImage2D(
-            target, level, internalformat, width, height, border, format, type, toByteBuffer(pixels),
+        glTexImage2D(
+            target, level, internalformat, width, height, border, format, type, interop.handleof(pixels),
         );
     }
     texParameterf(target: GLEnumTexTarget, pname: GLEnumTexParam, param: number): void {
-        GLES20.glTexParameterf(target, pname, param);
+        glTexParameterf(target, pname, param);
     }
     texParameteri(target: GLEnumTexTarget, pname: GLEnumTexParam, param: number): void {
-        GLES20.glTexParameteri(target, pname, param);
+        glTexParameteri(target, pname, param);
     }
     texSubImage2D(
         target: GLEnumTexTarget | GLEnumTexCubeMap, level: number, xoffset: number, yoffset: number,
         width: number, height: number, format: GLEnumColorComponent, type: GLEnumPixelType,
         pixels: ArrayBufferView,
     ) {
-        GLES20.glTexSubImage2D(
-            target, level, xoffset, yoffset, width, height, format, type, toByteBuffer(pixels),
+        glTexSubImage2D(
+            target, level, xoffset, yoffset, width, height, format, type, interop.handleof(pixels),
         );
     }
     uniform1f(location: NSWebGLUniformLocation | null, x: number): void {
-        GLES20.glUniform1f(getIdOrZero(location), x);
+        glUniform1f(getIdOrZero(location), x);
     }
     uniform1fv(location: NSWebGLUniformLocation, v: Float32Array | number[]): void {
-        GLES20.glUniform1fv(getIdOrZero(location), v.length, toFloatBuffer(v));
+        glUniform1fv(getIdOrZero(location), v.length, toFloatBuffer(v));
     }
     uniform1i(location: NSWebGLUniformLocation | null, x: number): void {
-        GLES20.glUniform1i(getIdOrZero(location), x);
+        glUniform1i(getIdOrZero(location), x);
     }
     uniform1iv(location: NSWebGLUniformLocation, v: Int32Array | number[]): void {
-        GLES20.glUniform1iv(getIdOrZero(location), v.length, toIntBuffer(v));
+        glUniform1iv(getIdOrZero(location), v.length, toIntBuffer(v));
     }
     uniform2f(location: NSWebGLUniformLocation | null, x: number, y: number): void {
-        GLES20.glUniform2f(getIdOrZero(location), x, y);
+        glUniform2f(getIdOrZero(location), x, y);
     }
     uniform2fv(location: NSWebGLUniformLocation, v: Float32Array | number[]): void {
-        GLES20.glUniform2fv(getIdOrZero(location), v.length, toFloatBuffer(v));
+        glUniform2fv(getIdOrZero(location), v.length, toFloatBuffer(v));
     }
     uniform2i(location: NSWebGLUniformLocation | null, x: number, y: number): void {
-        GLES20.glUniform2i(getIdOrZero(location), x, y);
+        glUniform2i(getIdOrZero(location), x, y);
     }
     uniform2iv(location: NSWebGLUniformLocation, v: Int32Array | number[]): void {
-        GLES20.glUniform2iv(getIdOrZero(location), v.length, toIntBuffer(v));
+        glUniform2iv(getIdOrZero(location), v.length, toIntBuffer(v));
     }
     uniform3f(location: NSWebGLUniformLocation | null, x: number, y: number, z: number): void {
-        GLES20.glUniform3f(getIdOrZero(location), x, y, z);
+        glUniform3f(getIdOrZero(location), x, y, z);
     }
     uniform3fv(location: NSWebGLUniformLocation, v: Float32Array | number[]): void {
-        GLES20.glUniform3fv(getIdOrZero(location), v.length, toFloatBuffer(v));
+        glUniform3fv(getIdOrZero(location), v.length, toFloatBuffer(v));
     }
     uniform3i(location: NSWebGLUniformLocation | null, x: number, y: number, z: number): void {
-        GLES20.glUniform3i(getIdOrZero(location), x, y, z);
+        glUniform3i(getIdOrZero(location), x, y, z);
     }
     uniform3iv(
         location: NSWebGLUniformLocation, v: Int32Array | number[],
     ): void {
-        GLES20.glUniform3iv(getIdOrZero(location), v.length, toIntBuffer(v));
+        glUniform3iv(getIdOrZero(location), v.length, toIntBuffer(v));
     }
     uniform4f(location: NSWebGLUniformLocation | null,
         x: number, y: number, z: number, w: number): void {
-        GLES20.glUniform4f(getIdOrZero(location), x, y, z, w);
+        glUniform4f(getIdOrZero(location), x, y, z, w);
     }
     uniform4fv(location: NSWebGLUniformLocation, v: Float32Array | number[]): void {
-        GLES20.glUniform4fv(getIdOrZero(location), v.length, toFloatBuffer(v));
+        glUniform4fv(getIdOrZero(location), v.length, toFloatBuffer(v));
     }
     uniform4i(location: NSWebGLUniformLocation | null,
         x: number, y: number, z: number, w: number
     ): void {
-        GLES20.glUniform4i(getIdOrZero(location), x, y, z, w);
+        glUniform4i(getIdOrZero(location), x, y, z, w);
     }
     uniform4iv(location: NSWebGLUniformLocation, v: Int32Array | number[]): void {
-        GLES20.glUniform4iv(getIdOrZero(location), v.length, toIntBuffer(v));
+        glUniform4iv(getIdOrZero(location), v.length, toIntBuffer(v));
     }
     uniformMatrix2fv(
         location: NSWebGLUniformLocation, transpose: boolean,
         value: Float32Array | number[],
     ): void {
-        GLES20.glUniformMatrix2fv(
-            getIdOrZero(location), value.length, transpose, toFloatBuffer(value),
+        glUniformMatrix2fv(
+            getIdOrZero(location), value.length, transpose ? 1 : 0, toFloatBuffer(value),
         );
     }
     uniformMatrix3fv(
         location: NSWebGLUniformLocation, transpose: boolean,
         value: Float32Array | number[],
     ): void {
-        GLES20.glUniformMatrix3fv(
-            getIdOrZero(location), value.length, transpose, toFloatBuffer(value));
+        glUniformMatrix3fv(
+            getIdOrZero(location), value.length, transpose ? 1 : 0, toFloatBuffer(value));
     }
     uniformMatrix4fv(
         location: NSWebGLUniformLocation, transpose: boolean,
         value: Float32Array | number[],
     ): void {
-        GLES20.glUniformMatrix4fv(
-            getIdOrZero(location), value.length, transpose, toFloatBuffer(value),
+        glUniformMatrix4fv(
+            getIdOrZero(location), value.length, transpose ? 1 : 0, toFloatBuffer(value),
         );
     }
     useProgram(program: NSWebGLProgram | null): void {
-        GLES20.glUseProgram(getIdOrZero(program));
+        glUseProgram(getIdOrZero(program));
     }
     validateProgram(program: NSWebGLProgram | null): void {
-        GLES20.glValidateProgram(getIdOrZero(program));
+        glValidateProgram(getIdOrZero(program));
     }
     vertexAttrib1f(indx: number, x: number): void {
-        GLES20.glVertexAttrib1f(indx, x);
+        glVertexAttrib1f(indx, x);
     }
     vertexAttrib1fv(indx: number, values: Float32Array | number[]): void {
-        GLES20.glVertexAttrib1fv(indx, toFloatBuffer(values));
+        glVertexAttrib1fv(indx, toFloatBuffer(values));
     }
     vertexAttrib2f(indx: number, x: number, y: number): void {
-        GLES20.glVertexAttrib2f(indx, x, y);
+        glVertexAttrib2f(indx, x, y);
     }
     vertexAttrib2fv(indx: number, values: Float32Array | number[]): void {
-        GLES20.glVertexAttrib2fv(indx, toFloatBuffer(values));
+        glVertexAttrib2fv(indx, toFloatBuffer(values));
     }
     vertexAttrib3f(indx: number, x: number, y: number, z: number): void {
-        GLES20.glVertexAttrib3f(indx, x, y, z);
+        glVertexAttrib3f(indx, x, y, z);
     }
     vertexAttrib3fv(indx: number, values: Float32Array | number[]): void {
-        GLES20.glVertexAttrib3fv(indx, toFloatBuffer(values));
+        glVertexAttrib3fv(indx, toFloatBuffer(values));
     }
     vertexAttrib4f(indx: number, x: number, y: number, z: number, w: number): void {
-        GLES20.glVertexAttrib4f(indx, x, y, z, w);
+        glVertexAttrib4f(indx, x, y, z, w);
     }
     vertexAttrib4fv(indx: number, values: Float32Array | number[]): void {
-        GLES20.glVertexAttrib4fv(indx, toFloatBuffer(values));
+        glVertexAttrib4fv(indx, toFloatBuffer(values));
     }
     vertexAttribPointer(
         indx: number, size: number, type: number, normalized: boolean, stride: number,
         offset: number,
     ): void {
-        GLES20.glVertexAttribPointer(
-            indx, size, type, normalized, stride, offset,
+        glVertexAttribPointer(
+            indx, size, type, normalized ? 1 : 0, stride, new interop.Pointer(offset),
         );
     }
     viewport(x: number, y: number, width: number, height: number): void {
-        GLES20.glViewport(x, y, width, height);
+        glViewport(x, y, width, height);
     }
 }

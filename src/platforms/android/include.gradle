@@ -2,8 +2,8 @@
 
 android {
 	productFlavors {
-		"nativescript-opengles" {
-			dimension "nativescript-opengles"
+		"nativescript-webgl" {
+			dimension "nativescript-webgl"
 		}
 	}
 }

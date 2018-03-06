@@ -1,5 +1,6 @@
 import '../../../node_modules/tns-platform-declarations/android';
 
+import { NSWebGLRenderingContext as NSWebGLRenderingContextDeclaration } from './rendering-context';
 import { assertNever } from '../helpers.common';
 import {
     GLEnumBlendingMode,
@@ -45,15 +46,17 @@ import {
     NSWebGLTexture,
     NSWebGLUniformLocation,
 } from './wrappers';
+import { CanvasView } from '../canvas-view';
 
 declare var WebGLRenderingContext: WebGLRenderingContext;
-export abstract class NSWebGLRenderingContextCommon {
+export abstract class NSWebGLRenderingContextBase implements NSWebGLRenderingContextDeclaration {
     abstract get drawingBufferHeight(): number;
     abstract get drawingBufferWidth(): number;
 
     protected _attributes: NSWebGLContextAttributes;
 
     constructor(
+        public canvas: CanvasView,
         attributes?: Partial<NSWebGLContextAttributes>,
     ) {
         this._attributes = {

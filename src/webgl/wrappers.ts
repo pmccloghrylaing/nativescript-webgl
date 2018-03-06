@@ -31,6 +31,15 @@ export class NSWebGLShader {
     constructor(public readonly _id: number) {}
 }
 
-export function getIdOrZero(obj: { _id: number; } | null | undefined) {
+export type NSWebGLObject =
+    | NSWebGLBuffer
+    | NSWebGLFramebuffer
+    | NSWebGLRenderbuffer
+    | NSWebGLProgram
+    | NSWebGLShader
+    | NSWebGLTexture
+    | NSWebGLUniformLocation;
+
+export function getIdOrZero(obj: NSWebGLObject | null | undefined) {
     return obj && obj._id || 0;
 }
