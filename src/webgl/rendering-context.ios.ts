@@ -1,5 +1,3 @@
-import 'tns-platform-declarations/ios';
-
 import { fromFloatBuffer, fromIntBuffer, toFloatBuffer, toIntBuffer } from '../helpers.ios';
 import {
     GLEnumBlendingEquation,
@@ -34,7 +32,8 @@ import {
     GLEnumUniformType,
     GLEnumVertexAttrib,
 } from './constants.common';
-import { NSWebGLRenderingContextBase } from './rendering-context-common';
+import { NSWebGLRenderingContext as NSWebGLRenderingContextDeclaration } from './rendering-context';
+import { NSWebGLRenderingContextBase } from './rendering-context.common';
 import {
     getIdOrZero,
     NSWebGLBuffer,
@@ -46,14 +45,7 @@ import {
     NSWebGLUniformLocation,
 } from './wrappers';
 
-export class NSWebGLRenderingContext extends NSWebGLRenderingContextBase {
-    get drawingBufferHeight(): number {
-        throw new Error();
-    }
-    get drawingBufferWidth(): number {
-        throw new Error();
-    }
-
+export class NSWebGLRenderingContext extends NSWebGLRenderingContextBase implements NSWebGLRenderingContextDeclaration {
     activeTexture(texture: GLEnumTexture): void {
         glActiveTexture(texture);
     }

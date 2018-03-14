@@ -11,6 +11,13 @@
             "es6",
             "dom"
         ],
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/tns-core-modules/*",
+                "./node_modules/*"
+            ]
+        },
         "pretty": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
@@ -20,22 +27,15 @@
         "noImplicitReturns": true,
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true,
-        "baseUrl": ".",
-        "paths": {
-            "*": [
-                "./node_modules/*"
-            ]
-        }
+        "typeRoots": [
+            "./node_modules/@types",
+            "./node_modules"
+        ],
+        "types": []
     },
     "exclude": [
         "node_modules",
         "platforms"
     ],
-    "compileOnSave": false,
-    "angularCompilerOptions": {
-        "annotateForClosureCompiler": true,
-        "strictMetadataEmit": true,
-        "skipTemplateCodegen": true,
-        "genDir": "."
-    }
+    "compileOnSave": false
 }

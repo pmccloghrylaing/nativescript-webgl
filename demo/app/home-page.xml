@@ -1,0 +1,5 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd"
+      xmlns:WebGL="nativescript-webgl"
+      loaded="pageLoaded" class="page">
+  <WebGL:CanvasView id="canvas"></WebGL:CanvasView>
+</Page>

@@ -1,6 +1,0 @@
-<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page"
-  xmlns:gl="nativescript-webgl">
-  <StackLayout class="p-20">
-    <gl:CanvasView id="cv"></gl:CanvasView>
-  </StackLayout>
-</Page>

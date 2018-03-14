@@ -1,4 +1,4 @@
-# Contributing to NativeScript Plugin Seed
+# Contributing to NativeScript WebGL
 
 :+1: First of all, thank you for taking the time to contribute! :+1:
 
@@ -32,48 +32,44 @@ Help us keep a healthy and open community. We expect all participants in this pr
 
 ## Submitting a PR
 
-Before you begin:
-* Make sure there is an issue for the bug or feature you will be working on.
+Before you begin make sure there is an issue for the bug or feature you will be working on.
 
 Following these steps is the best way to get your code included in the project:
 
-1. Fork and clone the nativescript-plugin-seed repo:
+1. Fork and clone the nativescript-webgl repo:
 ```bash
-git clone https://github.com/<your-git-username>/nativescript-plugin-seed.git
+git clone https://github.com/<your-git-username>/nativescript-webgl.git
 # Navigate to the newly cloned directory
-cd nativescript-plugin-seed
+cd nativescript-webgl
 # Add an "upstream" remote pointing to the original repo.
-git remote add upstream https://github.com/NativeScript/nativescript-plugin-seed.git
+git remote add upstream https://github.com/NativeScript/nativescript-webgl.git
 ```
-2. Create a branch for your PR
+
+2. Read our [development workflow guide](DevelopmentWorkflow.md) for local setup
+
+3. Create a branch for your PR
 ```bash
 git checkout -b <my-fix-branch> master
 ```
 
-3. The fun part! Make your code changes. Make sure you:
+4. The fun part! Make your code changes. Make sure you:
     - Follow the [code conventions guide](https://github.com/NativeScript/NativeScript/blob/master/CodingConvention.md).
     - Follow the [commit message guidelines](https://github.com/NativeScript/NativeScript/blob/pr-template/CONTRIBUTING.md#commit-messages)
-    - Setup your development workflow. The seed itself is a plugin so you can follow the [development setup][https://github.com/NativeScript/nativescript-plugin-seed#development-setup] described in the README.
-    - Write unit tests for your fix or feature. If this is not possible, explain how your change can be tested.
-        > NOTE: For changes in the postclone step, make sure you create tests in `seed-tests/postclone.tests.js`!
+    - Update the README if you make changes to the plugin API
 
-4. Before you submit your PR:
+5. Before you submit your PR:
     - Rebase your changes to the latest master: `git pull --rebase upstream master`.
-    - Ensure all unit test are green. How?
-         - Go to `seed-tests`
-         - Run `npm install`
-         - Run `npm run test.ios` or `npm run test.android`
-    - Ensure your changes pass tslint validation. (run `npm run tslint` in the root of the repo).
+    - Ensure your changes pass tslint validation. (run `npm run tslint` in the `src` folder).
 
 6. Push your fork. If you have rebased you might have to use force-push your branch:
 ```
 git push origin <my-fix-branch> --force
 ```
 
-7. [Submit your pull request](https://github.com/NativeScript/nativescript-plugin-seed/compare) and compare to `NativeScript/nativescript-plugin-seed`. Please, fill in the Pull Request template - it will help us better understand the PR and increase the chances of it getting merged quickly.
+7. [Submit your pull request](https://github.com/NativeScript/nativescript-webgl/compare) and compare to `NativeScript/nativescript-webgl`. Please, fill in the Pull Request template - it will help us better understand the PR and increase the chances of it getting merged quickly.
 
 It's our turn from there on! We will review the PR and discuss changes you might have to make before merging it! Thanks! 
 
 ## Where to Start
 
-If you want to contribute, but you are not sure where to start - look for issues labeled [`help wanted`](https://github.com/NativeScript/nativescript-plugin-seed/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
+If you want to contribute, but you are not sure where to start - look for issues labeled [`help wanted`](https://github.com/NativeScript/nativescript-webgl/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).

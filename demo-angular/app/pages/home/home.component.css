@@ -1,0 +1,26 @@
+.label {
+    font-size: 10;
+    font-weight: bold;
+    padding-top: 10;
+}
+
+.home {
+    margin-left: 30;
+    margin-right: 30;
+    margin-top: 20%;
+}
+
+.home .buttons {
+    margin-top: 30%;
+}
+
+.home .info {
+    margin-top: 20;
+    horizontal-align: center;
+}
+
+.avatar {
+    border-radius: 100;
+    width: 150;
+    height: auto;
+}

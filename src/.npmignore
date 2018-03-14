@@ -1,4 +1,4 @@
+*.log
 *.map
 *.ts
 !*.d.ts
-tsconfig.json

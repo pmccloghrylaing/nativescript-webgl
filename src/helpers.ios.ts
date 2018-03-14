@@ -1,4 +1,3 @@
-import 'tns-platform-declarations/android';
 
 // export function toByteBuffer(buffer: ArrayBuffer | ArrayBufferView) {
 //     const objcBuffer = interop.alloc(buffer.byteLength);

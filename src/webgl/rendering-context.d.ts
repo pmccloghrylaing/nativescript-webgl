@@ -1,3 +1,5 @@
+import { CanvasView } from '../ui/canvas-view';
+import { NSWebGLContextAttributes } from '../webgl/context-attributes';
 import {
     GLEnumBlendingMode,
     GLEnumBufferBit,
@@ -42,8 +44,10 @@ import {
 } from './wrappers';
 
 export declare class NSWebGLRenderingContext {
-    readonly drawingBufferHeight: number;
-    readonly drawingBufferWidth: number;
+    constructor(
+        canvas: CanvasView,
+        attributes?: Partial<NSWebGLContextAttributes>,
+    );
 
     activeTexture(texture: GLEnumTexture): void;
     attachShader(program: NSWebGLProgram | null, shader: NSWebGLShader | null): void;
